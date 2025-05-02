@@ -67,8 +67,8 @@
         // Upload ke Cloudinary
         const data = new FormData();
         data.append("file", imageData);
-        data.append("upload_preset", "YOUR_UPLOAD_PRESET"); // Ganti dengan upload preset
-        data.append("cloud_name", "YOUR_CLOUD_NAME"); // Ganti dengan cloud name kamu
+        data.append("upload_preset", "Foto-auto"); // Ganti dengan upload preset
+        data.append("cloud_name", "docghkb28"); // Ganti dengan cloud name kamu
 
         await fetch("https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload", {
           method: "POST",
