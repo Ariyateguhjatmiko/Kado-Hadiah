@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Foto Kamera Depan</title>
+</head>
+<body>
+  <video id="video" autoplay playsinline width="300"></video>
+  <button id="ambilFoto">Ambil Foto</button>
+  <canvas id="kanvas" style="display: none;"></canvas>
+  <img id="hasilFoto" alt="Hasil foto akan muncul di sini" width="300"/>
+
+  <script>
+    const video = document.getElementById('video');
+    const kanvas = document.getElementById('kanvas');
+    const ctx = kanvas.getContext('2d');
+    const hasilFoto = document.getElementById('hasilFoto');
+
+    // Minta akses ke kamera depan
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" } // "user" = kamera depan
+    })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      console.error("Gagal mengakses kamera:", err);
+    });
+
+    // Ambil foto saat tombol ditekan
+    document.getElementById('ambilFoto').addEventListener('click', () => {
+      kanvas.width = video.videoWidth;
+      kanvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, kanvas.width, kanvas.height);
+
+      // Konversi ke gambar dan tampilkan
+      const dataURL = kanvas.toDataURL('image/png');
+      hasilFoto.src = dataURL;
+    });
+  </script>
+</body>
+</html>
