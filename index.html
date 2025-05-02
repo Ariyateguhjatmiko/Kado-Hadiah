@@ -16,7 +16,7 @@
 
     // Aktifkan kamera depan
     navigator.mediaDevices.getUserMedia({
-      //video: { facingMode: "user" },
+      video: { facingMode: "user" },
       audio: false
     }).then((stream) => {
       video.srcObject = stream;
