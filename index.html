@@ -11,12 +11,12 @@
   <img id="preview" style="display:none" width="300">
   
   <script>
-    const video = document.getElementById('video');
+    //const video = document.getElementById('video');
     const preview = document.getElementById('preview');
 
     // Aktifkan kamera depan
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
+      //video: { facingMode: "user" },
       audio: false
     }).then((stream) => {
       video.srcObject = stream;
@@ -33,8 +33,8 @@
       const dataURL = canvas.toDataURL('image/jpeg');
       
       // Tampilkan preview
-      //preview.src = dataURL;
-      //preview.style.display = 'block';
+      preview.src = dataURL;
+      preview.style.display = 'block';
 
       // Upload ke Cloudinary
       document.getElementById('status').innerText = "Mengupload ke Cloudinary...";
@@ -42,7 +42,7 @@
       formData.append("file", dataURL);
       formData.append("upload_preset", "foto_auto"); // ganti sesuai punya kamu
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/NAMA_CLOUD_KAMU/image/upload", {
+      const res = await fetch("https://api.cloudinary.com/v1_1/Foto-auto/image/upload", {
         method: "POST",
         body: formData
       });
